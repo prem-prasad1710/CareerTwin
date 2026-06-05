@@ -3,7 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Target, Github } from 'lucide-react';
+import { Target, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function SignInPage() {
@@ -36,7 +36,7 @@ export default function SignInPage() {
             size="lg"
             onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
           >
-            <Github className="w-5 h-5" />
+            <Code2 className="w-5 h-5" />
             Continue with GitHub
           </Button>
 

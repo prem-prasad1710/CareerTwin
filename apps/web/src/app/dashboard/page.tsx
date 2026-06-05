@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
   return (
     <QueryState isLoading={isLoading} isError={isError} error={error}>
-      {data && (
+      {data ? (
         <div className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
@@ -141,7 +141,7 @@ export default function DashboardPage() {
             </Card>
           )}
         </div>
-      )}
+      ) : null}
     </QueryState>
   );
 }

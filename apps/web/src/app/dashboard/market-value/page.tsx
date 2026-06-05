@@ -13,7 +13,7 @@ export default function MarketValuePage() {
 
   return (
     <QueryState isLoading={isLoading} isError={isError} error={error}>
-      {mv && (
+      {mv ? (
         <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-bold">Market Value Engine</h1>
@@ -54,7 +54,7 @@ export default function MarketValuePage() {
             </Card>
           </div>
         </div>
-      )}
+      ) : null}
     </QueryState>
   );
 }

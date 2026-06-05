@@ -24,13 +24,14 @@ const DIMENSION_INFO: Record<string, { desc: string; tips: string[] }> = {
 };
 
 export default function CareerDnaPage() {
-  const { data: dna, isLoading, isError, error } = useCareerDna();
+  const { data: rawDna, isLoading, isError, error } = useCareerDna();
+  const dna = rawDna as Record<string, unknown> & { strengths?: string[]; weaknesses?: string[] } | undefined;
   const shareCard = useShareCard();
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
     <QueryState isLoading={isLoading} isError={isError} error={error}>
-      {dna && (
+      {dna ? (
         <div className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
@@ -90,7 +91,7 @@ export default function CareerDnaPage() {
             </Card>
           </div>
         </div>
-      )}
+      ) : null}
     </QueryState>
   );
 }

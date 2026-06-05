@@ -21,6 +21,7 @@ async function syncToBackend(payload: Record<string, unknown>): Promise<string |
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     GitHub({
       clientId: process.env.GITHUB_ID,
