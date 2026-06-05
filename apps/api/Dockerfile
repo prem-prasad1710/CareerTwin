@@ -17,4 +17,4 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/database/node_modules/.prisma ./node_modules/.prisma
 ENV NODE_ENV=production
 EXPOSE 4000
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/server.js"]

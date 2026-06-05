@@ -10,7 +10,7 @@ CareerTwin creates a living AI model of your professional life — continuously 
 careertwin-ai/
 ├── apps/
 │   ├── web/          # Next.js 15 frontend (Vercel)
-│   └── api/          # NestJS backend (AWS ECS)
+│   └── api/          # Express.js backend (AWS ECS)
 ├── packages/
 │   ├── database/     # Prisma + PostgreSQL + pgvector
 │   └── shared/       # Shared TypeScript types
@@ -22,9 +22,9 @@ careertwin-ai/
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Next.js 15, TypeScript, Tailwind CSS, Shadcn UI, React Query, Framer Motion, Recharts |
-| Backend | NestJS, TypeScript, BullMQ |
+| Backend | Express.js, TypeScript, Node.js |
 | Database | PostgreSQL + pgvector |
-| Cache/Queue | Redis + BullMQ |
+| Cache/Queue | Redis (optional) |
 | Auth | Clerk |
 | AI | OpenAI, Claude, Gemini (abstraction layer) |
 | Storage | AWS S3 |
