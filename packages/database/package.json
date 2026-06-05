@@ -4,6 +4,7 @@
   "private": true,
   "main": "./src/index.ts",
   "scripts": {
+    "postinstall": "prisma generate",
     "generate": "dotenv -e ../../.env -o -- prisma generate",
     "push": "dotenv -e ../../.env -o -- prisma db push",
     "migrate": "dotenv -e ../../.env -o -- prisma migrate dev",

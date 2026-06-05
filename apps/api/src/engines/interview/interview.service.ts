@@ -28,7 +28,9 @@ export class InterviewService {
     if (!user) throw new Error('User not found');
 
     const careerScore = user.profile?.careerScore || 50;
-    const skillMap = new Map(user.skills.map((s) => [s.skill.name, s.proficiency]));
+    const skillMap = new Map<string, number>(
+      user.skills.map((s) => [s.skill.name, s.proficiency]),
+    );
     const passedRate = user.interviewHistory.length > 0
       ? user.interviewHistory.filter((i) => i.outcome === 'PASSED').length / user.interviewHistory.length
       : 0.5;

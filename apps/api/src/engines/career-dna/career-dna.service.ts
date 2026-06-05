@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@careertwin/database';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CareerDna } from '@careertwin/shared';
 
@@ -31,8 +30,8 @@ export class CareerDnaService {
 
     await this.prisma.profile.upsert({
       where: { userId },
-      update: { careerDna: dna as unknown as Prisma.InputJsonValue },
-      create: { userId, careerDna: dna as unknown as Prisma.InputJsonValue },
+      update: { careerDna: dna as object },
+      create: { userId, careerDna: dna as object },
     });
 
     return { ...dna, strengths, weaknesses };

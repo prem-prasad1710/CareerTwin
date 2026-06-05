@@ -26,7 +26,9 @@ export class JobMatchService {
 
     if (!user) throw new Error('User not found');
 
-    const skillMap = new Map(user.skills.map((s) => [s.skill.name, s.proficiency]));
+    const skillMap = new Map<string, number>(
+      user.skills.map((s) => [s.skill.name, s.proficiency]),
+    );
     const marketValue = user.profile?.marketValue || 120000;
 
     return SAMPLE_JOBS.map((job) => {

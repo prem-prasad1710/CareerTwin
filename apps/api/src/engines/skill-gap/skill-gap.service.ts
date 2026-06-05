@@ -37,7 +37,7 @@ export class SkillGapService {
     if (!user) throw new Error('User not found');
 
     const requirements = ROLE_REQUIREMENTS[targetRole] || ROLE_REQUIREMENTS['Senior Software Engineer'];
-    const userSkillMap = new Map(
+    const userSkillMap = new Map<string, number>(
       user.skills.map((s) => [s.skill.name, s.proficiency]),
     );
 

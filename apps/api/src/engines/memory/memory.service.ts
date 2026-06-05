@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiService } from '../../ai/ai.service';
-import { MemoryType } from '@careertwin/database';
+
+type MemoryType =
+  | 'PROJECT' | 'PROMOTION' | 'INTERVIEW' | 'ACHIEVEMENT'
+  | 'CERTIFICATION' | 'FAILURE' | 'LESSON' | 'MILESTONE' | 'FEEDBACK';
 
 @Injectable()
 export class MemoryService {
