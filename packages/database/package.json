@@ -1,0 +1,20 @@
+{
+  "name": "@careertwin/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "generate": "dotenv -e ../../.env -o -- prisma generate",
+    "push": "dotenv -e ../../.env -o -- prisma db push",
+    "migrate": "dotenv -e ../../.env -o -- prisma migrate dev",
+    "seed": "dotenv -e ../../.env -o -- tsx prisma/seed.ts",
+    "studio": "dotenv -e ../../.env -o -- prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.8.2",
+    "tsx": "^4.19.4"
+  }
+}

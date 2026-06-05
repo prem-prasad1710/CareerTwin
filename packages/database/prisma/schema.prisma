@@ -1,0 +1,604 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+// ─── Core User ───────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  clerkId       String   @unique
+  email         String   @unique
+  firstName     String?
+  lastName      String?
+  avatarUrl     String?
+  role          UserRole @default(USER)
+  onboardingComplete Boolean @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile              Profile?
+  skills               UserSkill[]
+  projects             Project[]
+  workExperiences      WorkExperience[]
+  education            Education[]
+  careerGoals          CareerGoal[]
+  jobApplications      JobApplication[]
+  interviewHistory     InterviewHistory[]
+  careerSnapshots      CareerSnapshot[]
+  salaryHistory        SalaryHistory[]
+  careerPredictions    CareerPrediction[]
+  careerSimulations    CareerSimulation[]
+  learningActivities   LearningActivity[]
+  achievements         Achievement[]
+  skillScores          SkillScore[]
+  careerTimeline       CareerTimeline[]
+  aiRecommendations    AIRecommendation[]
+  careerMemories       CareerMemory[]
+  githubProfile        GitHubProfile?
+  linkedinProfile      LinkedinProfile?
+  careerHealthMetrics  CareerHealthMetric[]
+  shareCards           ShareCard[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  RECRUITER
+  HR
+  COACH
+  ADMIN
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline        String?
+  bio             String?
+  location        String?
+  currentRole     String?
+  currentCompany  String?
+  yearsExperience Float    @default(0)
+  careerScore     Int      @default(0)
+  marketValue     Float?
+  targetRole      String?
+  targetSalary    Float?
+  dreamCompany    String?
+  resumeUrl       String?
+  portfolioUrl    String?
+  linkedinUrl     String?
+  githubUrl       String?
+  leetcodeUrl     String?
+  careerDna       Json?
+  riskProfile     Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+// ─── Skills ────────────────────────────────────────────────────
+
+model Skill {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  category    SkillCategory
+  description String?
+  demandScore Float       @default(50)
+  salaryImpact Float      @default(0)
+  createdAt   DateTime    @default(now())
+
+  userSkills      UserSkill[]
+  jobMarketSkills JobMarketSkill[]
+  skillScores     SkillScore[]
+
+  @@map("skills")
+}
+
+enum SkillCategory {
+  FRONTEND
+  BACKEND
+  AI_ML
+  CLOUD
+  DEVOPS
+  DATA
+  MOBILE
+  DESIGN
+  PRODUCT
+  LEADERSHIP
+  SOFT_SKILL
+  ARCHITECTURE
+  SECURITY
+  OTHER
+}
+
+model UserSkill {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId      String
+  skill        Skill    @relation(fields: [skillId], references: [id])
+  proficiency  Int      @default(0) // 0-100
+  yearsUsed    Float    @default(0)
+  lastUsed     DateTime?
+  verified     Boolean  @default(false)
+  source       String?  // github, linkedin, self-reported, assessment
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, skillId])
+  @@map("user_skills")
+}
+
+model SkillScore {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId   String
+  skill     Skill    @relation(fields: [skillId], references: [id])
+  score     Int      // 0-100
+  dimension String   // career_dna dimension
+  source    String
+  createdAt DateTime @default(now())
+
+  @@map("skill_scores")
+}
+
+// ─── Career Data ─────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  url         String?
+  githubUrl   String?
+  techStack   String[]
+  impact      String?
+  role        String?
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean  @default(false)
+  qualityScore Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("projects")
+}
+
+model WorkExperience {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company     String
+  title       String
+  location    String?
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean  @default(false)
+  skills      String[]
+  achievements String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("work_experiences")
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution String
+  degree      String
+  field       String?
+  startDate   DateTime?
+  endDate     DateTime?
+  gpa         Float?
+  createdAt   DateTime @default(now())
+
+  @@map("education")
+}
+
+model CareerGoal {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  targetRole  String
+  targetCompany String?
+  targetSalary Float?
+  targetDate  DateTime?
+  priority    Int      @default(1)
+  status      GoalStatus @default(ACTIVE)
+  progress    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("career_goals")
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  ABANDONED
+}
+
+// ─── Job & Interview ─────────────────────────────────────────
+
+model JobApplication {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company     String
+  role        String
+  location    String?
+  salary      Float?
+  status      ApplicationStatus @default(APPLIED)
+  matchScore  Int?
+  appliedAt   DateTime          @default(now())
+  notes       String?
+  jobUrl      String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("job_applications")
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SCREENING
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+model InterviewHistory {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company     String
+  role        String
+  round       String?
+  type        InterviewType
+  date        DateTime
+  outcome     InterviewOutcome
+  feedback    String?
+  lessons     String?
+  questions   Json?
+  score       Int?
+  createdAt   DateTime        @default(now())
+
+  @@map("interview_history")
+}
+
+enum InterviewType {
+  PHONE
+  TECHNICAL
+  SYSTEM_DESIGN
+  BEHAVIORAL
+  ONSITE
+  HR
+  TAKE_HOME
+}
+
+enum InterviewOutcome {
+  PASSED
+  FAILED
+  PENDING
+  NO_SHOW
+}
+
+// ─── Predictions & Simulations ───────────────────────────────
+
+model CareerSnapshot {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerScore   Int
+  marketValue   Float
+  careerDna     Json
+  skillGaps     Json?
+  risks         Json?
+  snapshotDate  DateTime @default(now())
+  metadata      Json?
+
+  @@map("career_snapshots")
+}
+
+model SalaryHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float
+  currency  String   @default("USD")
+  source    String   // actual, estimated, predicted
+  role      String?
+  company   String?
+  location  String?
+  recordedAt DateTime @default(now())
+
+  @@map("salary_history")
+}
+
+model CareerPrediction {
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        PredictionType
+  title       String
+  prediction  Json
+  confidence  Float
+  timeframe   String
+  validUntil  DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@map("career_predictions")
+}
+
+enum PredictionType {
+  SALARY
+  PROMOTION
+  ROLE_CHANGE
+  SKILL_DEMAND
+  MARKET_VALUE
+  INTERVIEW_SUCCESS
+  TIMELINE
+  RISK
+}
+
+model CareerSimulation {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenario    String
+  description String?
+  inputs      Json
+  results     Json
+  salaryImpact Float?
+  promotionProbability Float?
+  interviewSuccessProbability Float?
+  careerGrowthImpact Float?
+  createdAt   DateTime @default(now())
+
+  @@map("career_simulations")
+}
+
+model CareerTimeline {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  year        Int
+  role        String
+  company     String?
+  salary      Float?
+  confidence  Float
+  isAlternate Boolean  @default(false)
+  scenario    String   @default("primary")
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@map("career_timeline")
+}
+
+// ─── Learning & Achievements ───────────────────────────────────
+
+model LearningActivity {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId     String?
+  title       String
+  type        LearningType
+  platform    String?
+  hoursSpent  Float        @default(0)
+  progress    Int          @default(0)
+  completedAt DateTime?
+  roiScore    Float?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("learning_activities")
+}
+
+enum LearningType {
+  COURSE
+  BOOK
+  PROJECT
+  CERTIFICATION
+  TUTORIAL
+  MENTORSHIP
+  CONFERENCE
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  type        String
+  date        DateTime
+  impact      String?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("achievements")
+}
+
+// ─── Market Data ─────────────────────────────────────────────
+
+model MarketData {
+  id          String   @id @default(cuid())
+  role        String
+  location    String
+  industry    String?
+  minSalary   Float
+  maxSalary   Float
+  medianSalary Float
+  demandIndex Float
+  growthRate  Float
+  dataDate    DateTime @default(now())
+  source      String?
+
+  @@unique([role, location, industry])
+  @@map("market_data")
+}
+
+model JobMarketSkill {
+  id          String   @id @default(cuid())
+  skillId     String
+  skill       Skill    @relation(fields: [skillId], references: [id])
+  role        String
+  demandScore Float
+  salaryPremium Float
+  growthTrend Float
+  updatedAt   DateTime @updatedAt
+
+  @@unique([skillId, role])
+  @@map("job_market_skills")
+}
+
+// ─── AI & Memory ─────────────────────────────────────────────
+
+model AIRecommendation {
+  id          String             @id @default(cuid())
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent       AIAgent
+  type        String
+  title       String
+  content     String
+  priority    Int                @default(1)
+  actionItems Json?
+  isRead      Boolean            @default(false)
+  isDismissed Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+
+  @@map("ai_recommendations")
+}
+
+enum AIAgent {
+  CAREER_COACH
+  INTERVIEW_COACH
+  SALARY_NEGOTIATOR
+  JOB_HUNTER
+  RESUME_OPTIMIZER
+  LEARNING_MENTOR
+  CAREER_STRATEGIST
+}
+
+model CareerMemory {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        MemoryType
+  title       String
+  content     String
+  tags        String[]
+  embedding   Unsupported("vector(1536)")?
+  metadata    Json?
+  occurredAt  DateTime
+  createdAt   DateTime     @default(now())
+
+  @@map("career_memories")
+}
+
+enum MemoryType {
+  PROJECT
+  PROMOTION
+  INTERVIEW
+  ACHIEVEMENT
+  CERTIFICATION
+  FAILURE
+  LESSON
+  MILESTONE
+  FEEDBACK
+}
+
+// ─── External Profiles ───────────────────────────────────────
+
+model GitHubProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username        String
+  repos           Int      @default(0)
+  stars           Int      @default(0)
+  contributions   Int      @default(0)
+  languages       Json?
+  engineeringScore Int     @default(0)
+  openSourceScore Int      @default(0)
+  technicalDepthScore Int  @default(0)
+  lastSynced      DateTime?
+  rawData         Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("github_profiles")
+}
+
+model LinkedinProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileUrl        String?
+  connections       Int      @default(0)
+  personalBrandScore Int     @default(0)
+  networkingScore   Int      @default(0)
+  visibilityScore   Int      @default(0)
+  lastSynced        DateTime?
+  rawData           Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("linkedin_profiles")
+}
+
+// ─── Health & Sharing ────────────────────────────────────────
+
+model CareerHealthMetric {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerHealth        Int
+  marketDemand        Int
+  salaryGrowth        Int
+  interviewReadiness  Int
+  learningVelocity    Int
+  promotionReadiness  Int
+  burnoutRisk         Int      @default(0)
+  stagnationRisk      Int      @default(0)
+  layoffVulnerability Int      @default(0)
+  skillObsolescenceRisk Int    @default(0)
+  recordedAt          DateTime @default(now())
+
+  @@map("career_health_metrics")
+}
+
+model ShareCard {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  data      Json
+  imageUrl  String?
+  shareUrl  String   @unique @default(cuid())
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("share_cards")
+}
