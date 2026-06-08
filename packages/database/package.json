@@ -2,7 +2,8 @@
   "name": "@careertwin/database",
   "version": "1.0.0",
   "private": true,
-  "main": "./src/index.ts",
+  "main": "./index.js",
+  "types": "./src/index.ts",
   "scripts": {
     "postinstall": "prisma generate",
     "generate": "dotenv -e ../../.env -o -- prisma generate",

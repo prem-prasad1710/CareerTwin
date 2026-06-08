@@ -15,6 +15,7 @@ COPY apps/api ./apps/api
 # Prisma generate only needs a valid URL format, not a live DB
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 RUN npm run generate --workspace=packages/database
+RUN npm run build --workspace=packages/shared
 RUN npm run build --workspace=apps/api
 
 FROM node:20-alpine

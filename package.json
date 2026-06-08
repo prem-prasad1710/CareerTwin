@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
     "dev:web": "npm run dev --workspace=apps/web",
-    "dev:api": "npm run start:dev --workspace=apps/api",
+    "dev:api": "npm run build --workspace=packages/shared && npm run start:dev --workspace=apps/api",
     "build": "npm run build --workspaces --if-present",
     "build:web": "npm run build --workspace=web",
     "db:generate": "npm run generate --workspace=packages/database",
