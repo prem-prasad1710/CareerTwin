@@ -19,9 +19,8 @@ export default function DashboardPage() {
   const { data, isLoading, isError, error } = useDashboard();
 
   return (
-    <QueryState isLoading={isLoading} isError={isError} error={error}>
-      {data ? (
-        <div className="space-y-8">
+    <QueryState isLoading={isLoading} isError={isError} error={error} isEmpty={!data}>
+      <div className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
@@ -141,7 +140,6 @@ export default function DashboardPage() {
             </Card>
           )}
         </div>
-      ) : null}
     </QueryState>
   );
 }

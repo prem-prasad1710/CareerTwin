@@ -1,101 +1,76 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { useCareerUserId } from './use-career-user';
+import { useCareerUser } from './use-career-user';
 import type {
   DashboardData, SkillGapData, TimelineData, InterviewPrediction,
   JobMatch, LearningROI, CareerRisks, CareerMemory, UserProfile, CoachAgent, GitHubProfile,
 } from '@/lib/api-types';
 
-export function useDashboard() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['dashboard', userId],
-    queryFn: () => api.dashboard(userId!) as Promise<DashboardData>,
+type CareerQueryResult<T> = UseQueryResult<T, Error> & { isLoading: boolean };
+
+function useUserQuery<T>(
+  queryKey: unknown[],
+  queryFn: (userId: string) => Promise<T>,
+): CareerQueryResult<T> {
+  const { userId, isLoading: userLoading } = useCareerUser();
+  const query = useQuery({
+    queryKey: [...queryKey, userId],
+    queryFn: () => queryFn(userId!),
     enabled: !!userId,
   });
+
+  return {
+    ...query,
+    isLoading: userLoading || query.isLoading,
+  } as CareerQueryResult<T>;
+}
+
+export function useDashboard() {
+  return useUserQuery(['dashboard'], (id) => api.dashboard(id) as Promise<DashboardData>);
 }
 
 export function useCareerDna() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['career-dna', userId],
-    queryFn: () => api.careerDna(userId!) as Promise<DashboardData['careerDna']>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['career-dna'], (id) => api.careerDna(id) as Promise<DashboardData['careerDna']>);
 }
 
 export function useMarketValue() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['market-value', userId],
-    queryFn: () => api.marketValue(userId!) as Promise<DashboardData['marketValue']>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['market-value'], (id) => api.marketValue(id) as Promise<DashboardData['marketValue']>);
 }
 
 export function useTimeline() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['timeline', userId],
-    queryFn: () => api.timeline(userId!) as Promise<TimelineData>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['timeline'], (id) => api.timeline(id) as Promise<TimelineData>);
 }
 
 export function useInterviewPredictions() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['interview-predictions', userId],
-    queryFn: () => api.interviewPredictions(userId!) as Promise<InterviewPrediction[]>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['interview-predictions'], (id) => api.interviewPredictions(id) as Promise<InterviewPrediction[]>);
 }
 
 export function useJobMatches() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['job-matches', userId],
-    queryFn: () => api.jobMatches(userId!) as Promise<JobMatch[]>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['job-matches'], (id) => api.jobMatches(id) as Promise<JobMatch[]>);
 }
 
 export function useLearningRoi() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['learning-roi', userId],
-    queryFn: () => api.learningRoi(userId!) as Promise<LearningROI[]>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['learning-roi'], (id) => api.learningRoi(id) as Promise<LearningROI[]>);
 }
 
 export function useSkillGap(targetRole: string) {
-  const userId = useCareerUserId();
-  return useQuery({
+  const { userId, isLoading: userLoading } = useCareerUser();
+  const query = useQuery({
     queryKey: ['skill-gap', userId, targetRole],
     queryFn: () => api.skillGap(userId!, targetRole) as Promise<SkillGapData>,
     enabled: !!userId && !!targetRole,
   });
+  return { ...query, isLoading: userLoading || query.isLoading } as CareerQueryResult<SkillGapData>;
 }
 
 export function useRisks() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['risks', userId],
-    queryFn: () => api.risks(userId!) as Promise<CareerRisks>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['risks'], (id) => api.risks(id) as Promise<CareerRisks>);
 }
 
 export function useMemories() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['memories', userId],
-    queryFn: () => api.memories(userId!) as Promise<CareerMemory[]>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['memories'], (id) => api.memories(id) as Promise<CareerMemory[]>);
 }
 
 export function useCoachAgents() {
@@ -106,16 +81,11 @@ export function useCoachAgents() {
 }
 
 export function useUserProfile() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['user-profile', userId],
-    queryFn: () => api.user(userId!) as Promise<UserProfile>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['user-profile'], (id) => api.user(id) as Promise<UserProfile>);
 }
 
 export function useUpdateProfile() {
-  const userId = useCareerUserId();
+  const { userId } = useCareerUser();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: Record<string, unknown>) => api.updateProfile(userId!, data),
@@ -124,7 +94,7 @@ export function useUpdateProfile() {
 }
 
 export function useShareCard() {
-  const userId = useCareerUserId();
+  const { userId } = useCareerUser();
   return useMutation({
     mutationFn: (data: { type: string; title: string; data: Record<string, unknown> }) =>
       api.share(userId!, data),
@@ -132,10 +102,5 @@ export function useShareCard() {
 }
 
 export function useGithubIntel() {
-  const userId = useCareerUserId();
-  return useQuery({
-    queryKey: ['github', userId],
-    queryFn: () => api.github(userId!) as Promise<GitHubProfile>,
-    enabled: !!userId,
-  });
+  return useUserQuery(['github'], (id) => api.github(id) as Promise<GitHubProfile>);
 }

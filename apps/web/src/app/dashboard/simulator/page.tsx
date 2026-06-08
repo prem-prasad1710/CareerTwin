@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { QueryState } from '@/components/ui/query-state';
-import { useCareerUserId } from '@/hooks/use-career-user';
+import { useCareerUser } from '@/hooks/use-career-user';
 import { api } from '@/lib/api';
 import { formatPercent } from '@/lib/utils';
 import { FlaskConical, Zap, TrendingUp, Target, Briefcase } from 'lucide-react';
@@ -32,19 +32,21 @@ interface SimResult {
 }
 
 export default function SimulatorPage() {
-  const userId = useCareerUserId();
+  const { userId, isLoading: userLoading } = useCareerUser();
   const [result, setResult] = useState<SimResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [simError, setSimError] = useState<string | null>(null);
   const [custom, setCustom] = useState('');
 
   const runSimulation = async (scenario: string, duration?: string) => {
     if (!userId) return;
     setLoading(true);
+    setSimError(null);
     try {
       const res = await api.simulate(userId, { scenario, duration });
       setResult(res as SimResult);
     } catch (e) {
-      console.error(e);
+      setSimError(e instanceof Error ? e.message : 'Simulation failed');
     }
     setLoading(false);
   };
@@ -52,7 +54,8 @@ export default function SimulatorPage() {
   const chartData = result?.timeline.map((t) => ({ month: `M${t.month}`, salary: t.salary })) || [];
 
   return (
-    <div className="space-y-8">
+    <QueryState isLoading={userLoading} isError={false} error={null}>
+      <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-3"><FlaskConical className="w-8 h-8 text-primary" /> Career Simulator</h1>
         <p className="text-muted mt-1">Simulate career decisions and see predicted outcomes</p>
@@ -74,6 +77,10 @@ export default function SimulatorPage() {
           <Button onClick={() => custom && runSimulation(custom)} disabled={loading || !userId}>{loading ? 'Simulating...' : 'Simulate'}</Button>
         </div>
       </Card>
+
+      {simError && (
+        <div className="glass rounded-2xl p-4 text-center text-red-400 text-sm">{simError}</div>
+      )}
 
       {result && (
         <>
@@ -133,6 +140,7 @@ export default function SimulatorPage() {
           </Card>
         </>
       )}
-    </div>
+      </div>
+    </QueryState>
   );
 }

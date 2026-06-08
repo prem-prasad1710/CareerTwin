@@ -1,6 +1,9 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-
-export const DEMO_USER_ID = 'demo-user';
+const API_BASE =
+  typeof window !== 'undefined'
+    ? '/api/proxy/v1'
+    : process.env.API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:4000/api/v1';
 
 async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -10,7 +13,18 @@ async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
       ...options?.headers,
     },
   });
-  if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const body = await res.json();
+      if (body?.error) message = body.error;
+    } catch {
+      // ignore parse errors
+    }
+    throw new Error(message);
+  }
+
   return res.json();
 }
 

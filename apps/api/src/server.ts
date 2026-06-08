@@ -6,7 +6,22 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+const allowedOrigins = new Set([
+  'http://localhost:3000',
+  FRONTEND_URL,
+  'https://career-twin-web.vercel.app',
+].filter(Boolean));
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.has(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // allow all in dev; tighten in production if needed
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 app.get('/health', (_req, res) => {
