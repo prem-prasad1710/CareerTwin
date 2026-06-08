@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { QueryState } from '@/components/ui/query-state';
 import { useCoachAgents } from '@/hooks/use-career-api';
-import { useCareerUserId } from '@/hooks/use-career-user';
+import { useCareerUser } from '@/hooks/use-career-user';
 import { api } from '@/lib/api';
 import { MessageSquare, Send, Bot, User } from 'lucide-react';
 
@@ -15,7 +15,7 @@ interface Message { role: 'user' | 'assistant'; content: string; }
 const QUICK_PROMPTS = ['What should I learn next?', 'Am I ready for SDE-2?', 'How can I increase salary by 50%?', 'What companies should I target?'];
 
 export default function CoachPage() {
-  const userId = useCareerUserId();
+  const { userId } = useCareerUser();
   const { data: agents, isLoading, isError, error } = useCoachAgents();
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: "Hi! I'm your Career Coach with full access to your Career Twin. What would you like to explore?" },

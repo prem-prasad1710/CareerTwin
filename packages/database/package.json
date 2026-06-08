@@ -7,8 +7,10 @@
     "postinstall": "prisma generate",
     "generate": "dotenv -e ../../.env -o -- prisma generate",
     "push": "dotenv -e ../../.env -o -- prisma db push",
+    "push:prod": "prisma db push",
     "migrate": "dotenv -e ../../.env -o -- prisma migrate dev",
     "seed": "dotenv -e ../../.env -o -- tsx prisma/seed.ts",
+    "seed:prod": "tsx prisma/seed.ts",
     "studio": "dotenv -e ../../.env -o -- prisma studio"
   },
   "dependencies": {

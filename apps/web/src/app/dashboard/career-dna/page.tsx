@@ -29,7 +29,8 @@ export default function CareerDnaPage() {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <QueryState isLoading={isLoading} isError={isError} error={error} isEmpty={!dna}>
+    <QueryState isLoading={isLoading} isError={isError} error={error}>
+      {dna && (
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -44,12 +45,12 @@ export default function CareerDnaPage() {
         <div className="grid grid-cols-2 gap-6">
           <Card glow>
             <CardHeader><CardTitle>DNA Radar</CardTitle></CardHeader>
-            <CareerRadarChart data={Object.fromEntries(Object.entries(dna!).filter(([k]) => k in DIMENSION_INFO)) as Record<string, number>} />
+            <CareerRadarChart data={Object.fromEntries(Object.entries(dna).filter(([k]) => k in DIMENSION_INFO)) as Record<string, number>} />
           </Card>
           <Card>
             <CardHeader><CardTitle>Dimension Breakdown</CardTitle></CardHeader>
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
-              {Object.entries(dna!).filter(([k]) => k in DIMENSION_INFO).sort(([, a], [, b]) => (b as number) - (a as number)).map(([key, score]) => (
+              {Object.entries(dna).filter(([k]) => k in DIMENSION_INFO).sort(([, a], [, b]) => (b as number) - (a as number)).map(([key, score]) => (
                 <button key={key} onClick={() => setSelected(selected === key ? null : key)} className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] text-left">
                   <div className="flex-1">
                     <div className="flex justify-between mb-1">
@@ -82,13 +83,14 @@ export default function CareerDnaPage() {
 
         <div className="grid grid-cols-2 gap-6">
           <Card><CardHeader><CardTitle className="text-emerald-400">Top Strengths</CardTitle></CardHeader>
-            {dna!.strengths?.map((s: string) => <Badge key={s} variant="success" className="mr-2 mb-2">{s}</Badge>)}
+            {dna.strengths?.map((s: string) => <Badge key={s} variant="success" className="mr-2 mb-2">{s}</Badge>)}
           </Card>
           <Card><CardHeader><CardTitle className="text-amber-400">Growth Areas</CardTitle></CardHeader>
-            {dna!.weaknesses?.map((s: string) => <Badge key={s} variant="warning" className="mr-2 mb-2">{s}</Badge>)}
+            {dna.weaknesses?.map((s: string) => <Badge key={s} variant="warning" className="mr-2 mb-2">{s}</Badge>)}
           </Card>
         </div>
       </div>
+      )}
     </QueryState>
   );
 }

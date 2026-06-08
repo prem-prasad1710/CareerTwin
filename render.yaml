@@ -1,0 +1,35 @@
+# Render Blueprint — deploy API at https://dashboard.render.com
+# 1. Push repo to GitHub
+# 2. Render → New → Blueprint → connect repo
+# 3. Set DATABASE_URL (from Neon) and AI keys when prompted
+# 4. After deploy, set API_URL on Vercel to: https://<your-service>.onrender.com/api/v1
+
+services:
+  - type: web
+    name: careertwin-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: FRONTEND_URL
+        value: https://career-twin-web.vercel.app
+      - key: DATABASE_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+        optional: true
+      - key: ANTHROPIC_API_KEY
+        sync: false
+        optional: true
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+        optional: true
+      - key: GITHUB_TOKEN
+        sync: false
+        optional: true
