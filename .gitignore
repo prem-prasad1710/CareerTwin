@@ -3,6 +3,7 @@ dist/
 .next/
 .env
 .env.local
+.env.example
 packages/database/.env
 *.log
 .DS_Store
