@@ -13,6 +13,8 @@ import * as interview from '../services/interview.service';
 import * as memory from '../services/memory.service';
 import * as coach from '../services/coach.service';
 import * as jobMatch from '../services/job-match.service';
+import * as jobApps from '../services/job-applications.service';
+import * as goals from '../services/goals.service';
 import * as learningRoi from '../services/learning-roi.service';
 import * as github from '../services/github.service';
 import * as linkedin from '../services/linkedin.service';
@@ -131,6 +133,46 @@ router.get('/share/card/:shareUrl', asyncHandler(async (req, res) => {
 
 router.get('/share/:userId', asyncHandler(async (req, res) => {
   res.json(await share.list(userId(req)));
+}));
+
+// Goals
+router.get('/goals/:userId', asyncHandler(async (req, res) => {
+  res.json(await goals.getGoals(userId(req)));
+}));
+
+router.post('/goals/:userId', asyncHandler(async (req, res) => {
+  res.json(await goals.createGoal(userId(req), req.body));
+}));
+
+router.put('/goals/:userId/:goalId', asyncHandler(async (req, res) => {
+  res.json(await goals.updateGoal(param(req.params.goalId), userId(req), req.body));
+}));
+
+router.delete('/goals/:userId/:goalId', asyncHandler(async (req, res) => {
+  await goals.deleteGoal(param(req.params.goalId), userId(req));
+  res.json({ ok: true });
+}));
+
+// Job Applications Tracker
+router.get('/applications/:userId', asyncHandler(async (req, res) => {
+  res.json(await jobApps.getApplications(userId(req)));
+}));
+
+router.get('/applications/:userId/stats', asyncHandler(async (req, res) => {
+  res.json(await jobApps.getStats(userId(req)));
+}));
+
+router.post('/applications/:userId', asyncHandler(async (req, res) => {
+  res.json(await jobApps.createApplication(userId(req), req.body));
+}));
+
+router.put('/applications/:userId/:appId', asyncHandler(async (req, res) => {
+  res.json(await jobApps.updateApplication(param(req.params.appId), userId(req), req.body));
+}));
+
+router.delete('/applications/:userId/:appId', asyncHandler(async (req, res) => {
+  await jobApps.deleteApplication(param(req.params.appId), userId(req));
+  res.json({ ok: true });
 }));
 
 export default router;

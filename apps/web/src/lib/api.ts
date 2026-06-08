@@ -62,4 +62,27 @@ export const api = {
     fetchAPI('/users/sync', { method: 'POST', body: JSON.stringify(data) }),
   updateProfile: (userId: string, data: Record<string, unknown>) =>
     fetchAPI(`/users/${userId}/profile`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Goals
+  goals: (userId: string) => fetchAPI(`/goals/${userId}`),
+  createGoal: (userId: string, data: Record<string, unknown>) =>
+    fetchAPI(`/goals/${userId}`, { method: 'POST', body: JSON.stringify(data) }),
+  updateGoal: (userId: string, goalId: string, data: Record<string, unknown>) =>
+    fetchAPI(`/goals/${userId}/${goalId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteGoal: (userId: string, goalId: string) =>
+    fetchAPI(`/goals/${userId}/${goalId}`, { method: 'DELETE' }),
+
+  // Job Applications Tracker
+  applications: (userId: string) => fetchAPI(`/applications/${userId}`),
+  applicationStats: (userId: string) => fetchAPI(`/applications/${userId}/stats`),
+  createApplication: (userId: string, data: Record<string, unknown>) =>
+    fetchAPI(`/applications/${userId}`, { method: 'POST', body: JSON.stringify(data) }),
+  updateApplication: (userId: string, appId: string, data: Record<string, unknown>) =>
+    fetchAPI(`/applications/${userId}/${appId}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteApplication: (userId: string, appId: string) =>
+    fetchAPI(`/applications/${userId}/${appId}`, { method: 'DELETE' }),
+
+  // Memory create
+  createMemory: (userId: string, data: Record<string, unknown>) =>
+    fetchAPI(`/memory/${userId}`, { method: 'POST', body: JSON.stringify(data) }),
 };

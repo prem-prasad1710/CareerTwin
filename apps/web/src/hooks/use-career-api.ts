@@ -6,6 +6,7 @@ import { useCareerUser } from './use-career-user';
 import type {
   DashboardData, SkillGapData, TimelineData, InterviewPrediction,
   JobMatch, LearningROI, CareerRisks, CareerMemory, UserProfile, CoachAgent, GitHubProfile,
+  CareerGoal, JobApplication, AppStats,
 } from '@/lib/api-types';
 
 type CareerQueryResult<T> = UseQueryResult<T, Error> & { isLoading: boolean };
@@ -103,4 +104,93 @@ export function useShareCard() {
 
 export function useGithubIntel() {
   return useUserQuery(['github'], (id) => api.github(id) as Promise<GitHubProfile>);
+}
+
+// Goals
+export function useGoals() {
+  return useUserQuery(['goals'], (id) => api.goals(id) as Promise<CareerGoal[]>);
+}
+
+export function useCreateGoal() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.createGoal(userId!, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
+
+export function useUpdateGoal() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ goalId, data }: { goalId: string; data: Record<string, unknown> }) =>
+      api.updateGoal(userId!, goalId, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
+
+export function useDeleteGoal() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (goalId: string) => api.deleteGoal(userId!, goalId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goals', userId] }),
+  });
+}
+
+// Job Applications
+export function useApplications() {
+  return useUserQuery(['applications'], (id) => api.applications(id) as Promise<JobApplication[]>);
+}
+
+export function useApplicationStats() {
+  return useUserQuery(['application-stats'], (id) => api.applicationStats(id) as Promise<AppStats>);
+}
+
+export function useCreateApplication() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.createApplication(userId!, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['applications', userId] });
+      qc.invalidateQueries({ queryKey: ['application-stats', userId] });
+    },
+  });
+}
+
+export function useUpdateApplication() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ appId, data }: { appId: string; data: Record<string, unknown> }) =>
+      api.updateApplication(userId!, appId, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['applications', userId] });
+      qc.invalidateQueries({ queryKey: ['application-stats', userId] });
+    },
+  });
+}
+
+export function useDeleteApplication() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (appId: string) => api.deleteApplication(userId!, appId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['applications', userId] });
+      qc.invalidateQueries({ queryKey: ['application-stats', userId] });
+    },
+  });
+}
+
+// Memory creation
+export function useCreateMemory() {
+  const { userId } = useCareerUser();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => api.createMemory(userId!, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['memories', userId] }),
+  });
 }

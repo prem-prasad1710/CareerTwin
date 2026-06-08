@@ -77,3 +77,38 @@ export interface UserProfile {
 export interface CoachAgent {
   name: string; type: string; capabilities: string[];
 }
+
+export interface CareerGoal {
+  id: string;
+  title: string;
+  description?: string;
+  targetRole?: string;
+  targetDate?: string;
+  progress: number;
+  status: 'ACTIVE' | 'COMPLETED' | 'PAUSED' | 'ABANDONED';
+  createdAt: string;
+}
+
+export interface JobApplication {
+  id: string;
+  company: string;
+  role: string;
+  location?: string;
+  salary?: number;
+  jobUrl?: string;
+  notes?: string;
+  status: 'APPLIED' | 'SCREENING' | 'INTERVIEW' | 'OFFER' | 'REJECTED';
+  appliedAt: string;
+  matchScore?: number;
+}
+
+export interface AppStats {
+  total: number;
+  applied: number;
+  screening: number;
+  interviewing: number;
+  offers: number;
+  rejected: number;
+  responseRate: number;
+  successRate: number;
+}
